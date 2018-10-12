@@ -249,7 +249,9 @@
                     highlight: true
                 }]
             }).on('typeahead:selected',function(e,obj) {
-                window.location.href = obj.url;
+		// RLB hack for db reports search proxied behind ih2
+		var url = obj.url.replace(/https?:\/\/.*?\/.*?\//i,'/relay/dbreports/');
+                window.location.href = url;
             });
 		})();
     </script>
