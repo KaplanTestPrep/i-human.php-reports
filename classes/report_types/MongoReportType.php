@@ -51,11 +51,22 @@ class MongoReportType extends ReportTypeBase {
 		$mongo_database = isset($report->options['Mongodatabase'])? $report->options['Mongodatabase'] : '';
 
 		//command without eval string
-		$command = 'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database.' --quiet --eval ';
+		$command = 'mongo '.$config['host'].':'.$config['port'].'/'.$mongo_database;
+
+		if ( isset($config['user']) ) {
+		   $command .= ' --username ' . $config['user'];
+		}
+		if ( isset($config['pass']) ) {
+		    $command .= ' --password ' . $config['pass'];
+		}
+
+		$command .= ' --quiet --eval ';
 
 		//easy to read formatted query
+		$display_command = str_replace("--password ".$config['pass'],"-- password XXXXXXXX",$command);
+
 		$report->options['Query_Formatted'] = '<div>
-			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.$command.'"..."</pre>'.
+			<pre style="background-color: black; color: white; padding: 10px 5px;">$ '.$display_command.'"..."</pre>'.
 			'Eval String:'.
 			'<pre class="prettyprint linenums lang-js">'.htmlentities($eval).'</pre>
 		</div>';
