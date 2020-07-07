@@ -41,6 +41,20 @@ abstract class XlsReportBase extends ReportFormatBase {
 		$rows = array();
 		$row = array();
 		$cols = 0;
+		$objPHPExcel->setActiveSheetIndex($i);
+		if(isset($dataset['title'])) {
+			// Some characters are not allowed in Excel sheet titles
+			$title = preg_replace('#[\\/*[\]:?]#','',$dataset['title']);
+
+			// Max title length is 31 characters
+			$title = substr($title, 0, 31);
+
+			$objPHPExcel->getActiveSheet()->setTitle($title);
+		}
+
+		if ( count($dataset['rows']) == 0 ) {
+		  return $objPHPExcel;
+		}
 		$first_row = $dataset['rows'][0];
 		foreach($first_row['values'] as $key=>$value){
 			array_push($row, $value->key);
@@ -61,16 +75,6 @@ abstract class XlsReportBase extends ReportFormatBase {
 		$objPHPExcel->getActiveSheet()->setAutoFilter('A1:'.self::columnLetter($cols).count($rows));
 		for ($a = 1; $a <= $cols; $a++) {
 			$objPHPExcel->getActiveSheet()->getColumnDimension(self::columnLetter($a))->setAutoSize(true);
-		}
-
-		if(isset($dataset['title'])) {
-			// Some characters are not allowed in Excel sheet titles
-			$title = preg_replace('#[\\/*[\]:?]#','',$dataset['title']);
-
-			// Max title length is 31 characters
-			$title = substr($title, 0, 31);
-
-			$objPHPExcel->getActiveSheet()->setTitle($title);
 		}
 
 		return $objPHPExcel;
