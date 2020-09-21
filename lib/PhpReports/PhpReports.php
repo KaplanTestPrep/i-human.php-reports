@@ -409,31 +409,34 @@ class PhpReports {
 		$reports = glob($dir.'*',GLOB_NOSORT);
 		$return = array();
 		foreach($reports as $key=>$report) {
-			$title = $description = false;
+			$title = $description = $hide = false;
 
 			if(is_dir($report)) {
 				if(file_exists($report.'/TITLE.txt')) $title = file_get_contents($report.'/TITLE.txt');
 				if(file_exists($report.'/README.txt')) $description = file_get_contents($report.'/README.txt');
+                if(file_exists($report.'/HIDE')) $hide = true;
 
-				$id = str_replace(array('_','-','/',' '),array('','','_','-'),trim(substr($report,strlen($base)),'/'));
+                if ( !$hide ) {
+                    $id = str_replace(array('_','-','/',' '),array('','','_','-'),trim(substr($report,strlen($base)),'/'));
 
-				$children = self::getReports($report.'/', $errors);
+                    $children = self::getReports($report.'/', $errors);
 
-				$count = 0;
-				foreach($children as $child) {
-					if(isset($child['count'])) $count += $child['count'];
-					else $count++;
-				}
+                    $count = 0;
+                    foreach($children as $child) {
+                        if(isset($child['count'])) $count += $child['count'];
+                        else $count++;
+                    }
 
-				$return[] = array(
-					'Name'=>ucwords(str_replace(array('_','-'),' ',basename($report))),
-					'Title'=>$title,
-					'Id'=> $id,
-					'Description'=>$description,
-					'is_dir'=>true,
-					'children'=>$children,
-					'count'=>$count
-				);
+                    $return[] = array(
+                        'Name'=>ucwords(str_replace(array('_','-'),' ',basename($report))),
+                        'Title'=>$title,
+                        'Id'=> $id,
+                        'Description'=>$description,
+                        'is_dir'=>true,
+                        'children'=>$children,
+                        'count'=>$count
+                    );
+                }
 			}
 			else {
 				//files to skip
